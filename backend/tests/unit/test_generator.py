@@ -52,6 +52,7 @@ from collections import Counter
 from datetime import date
 
 import pytest
+
 from app.data.generator import generate
 from app.domain.holidays import HolidayCalendar
 

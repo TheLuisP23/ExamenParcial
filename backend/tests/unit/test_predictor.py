@@ -114,6 +114,7 @@ from dataclasses import dataclass
 from datetime import date
 
 import pytest
+
 from app.domain.factors import ClimaInput, HourlyPoint, f_clima
 from app.domain.holidays import HolidayCalendar
 from app.domain.predictor import nivel_afluencia, predict
