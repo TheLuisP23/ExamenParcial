@@ -1,4 +1,8 @@
 # syntax=docker/dockerfile:1
+#
+# Build context = RAÍZ del repo (no backend/), para poder copiar config/*.yaml
+# (P7: coeficientes fuera del código) dentro de la imagen. Ver docker-compose.yml
+# y .github/workflows/{ci,deploy}.yml: build.context=., dockerfile=backend/Dockerfile.
 
 # --- Etapa 1: build (instala dependencias en un venv) ---------------------
 FROM python:3.12-slim AS builder
@@ -8,8 +12,8 @@ WORKDIR /build
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml ./
-COPY app ./app
+COPY backend/pyproject.toml ./
+COPY backend/app ./app
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .
@@ -29,7 +33,8 @@ RUN useradd --create-home --uid 1000 --shell /usr/sbin/nologin appuser
 WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv
-COPY app ./app
+COPY backend/app ./app
+COPY config ./config
 
 RUN chown -R appuser:appuser /app
 USER appuser
