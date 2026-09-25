@@ -1,0 +1,6 @@
+extends:
+  - recommended
+rules:
+  security-defined: off        # API pública de solo lectura, sin autenticación (spec 04)
+  info-license: off
+  operation-4xx-response: warn

@@ -1,0 +1,71 @@
+# Coeficientes del modelo reglas-v1 (ver specs/03-modelo-prediccion.md)
+version_modelo: reglas-v1
+capacidad_diaria: 1500          # SUPUESTO operativo
+
+calibracion:
+  visitantes_anuales_parque: 160000   # cifra pública PN Tingo María (SERNANP, vía prensa)
+  proporcion_cueva: 0.80              # SUPUESTO: la cueva es el atractivo principal
+  semilla: 42
+  anios: 3
+  ruido_sigma: 0.15
+
+rango:
+  factor_min: 0.80
+  factor_max: 1.20
+
+temporada:   # por número de mes
+  1: 1.10
+  2: 1.10
+  3: 0.90
+  4: 0.95
+  5: 0.95
+  6: 1.00
+  7: 1.20
+  8: 1.10
+  9: 0.95
+  10: 0.90
+  11: 0.90
+  12: 1.05
+
+dia_semana:  # 0 = lunes (datetime.weekday)
+  0: 0.75
+  1: 0.70
+  2: 0.70
+  3: 0.80
+  4: 0.95
+  5: 1.45
+  6: 1.50
+
+feriado:
+  normal: 1.00
+  aislado: 1.35
+  largo: 1.60
+  min_dias_bloque_largo: 3
+
+clima:
+  piso: 0.30
+  lluvia_tramos:            # [desde_mm, factor] ordenados; se usa el último tramo cuyo desde ≤ mm
+    - [0, 1.00]
+    - [2, 0.90]
+    - [10, 0.70]
+    - [25, 0.50]
+    - [50, 0.35]
+  horario:
+    desde: 8
+    hasta: 16
+    chance_minima: 70
+    horas_minimas: 4
+    factor: 0.85
+  tormenta:
+    codigos: [1087, 1273, 1276, 1279, 1282]
+    factor: 0.80
+  calor:
+    maxtemp_c: 34
+    factor: 0.90
+  dia_seco:
+    precip_max_mm: 1
+    chance_max: 30
+    factor: 1.05
+
+advertencias:
+  lluvia_extrema_mm: 50

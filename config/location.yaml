@@ -1,0 +1,8 @@
+nombre: "Cueva de las Lechuzas, PN Tingo María"
+lat: -9.3292
+lon: -76.0269
+zona_horaria: America/Lima
+altitud_msnm: 673
+horario_visita:
+  apertura: "08:00"
+  cierre: "17:00"

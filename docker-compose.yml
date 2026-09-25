@@ -1,0 +1,27 @@
+# Desarrollo local: construye las imágenes desde el código.
+services:
+  api:
+    build:
+      context: backend
+      args:
+        APP_VERSION: dev
+    env_file: .env
+    environment:
+      DATABASE_PATH: /data/cueva.db
+      TZ: America/Lima
+    volumes:
+      - cueva-data:/data
+    expose:
+      - "8000"
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  cueva-data:

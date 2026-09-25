@@ -1,0 +1,25 @@
+# Clima sintético por mes para el generador (SUPUESTOS académicos, ver specs/02 §4.3).
+# Época de lluvias: octubre–abril. Reemplazar con climatología SENAMHI si se obtiene.
+lluvioso: &lluvioso
+  p_lluvia: 0.75
+  mm_medio: 18
+  tmax: 29
+  p_tormenta: 0.20
+seco: &seco
+  p_lluvia: 0.40
+  mm_medio: 8
+  tmax: 30
+  p_tormenta: 0.05
+meses:
+  1: *lluvioso
+  2: *lluvioso
+  3: *lluvioso
+  4: *lluvioso
+  5: *seco
+  6: *seco
+  7: *seco
+  8: *seco
+  9: *seco
+  10: *lluvioso
+  11: *lluvioso
+  12: *lluvioso

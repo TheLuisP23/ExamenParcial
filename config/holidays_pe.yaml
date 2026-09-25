@@ -1,0 +1,24 @@
+# Feriados nacionales del Perú (fijos, MM-DD). Verificar cada año contra el calendario oficial.
+# Jueves y Viernes Santo se calculan con dateutil.easter (Pascua - 3 y - 2 días).
+fijos:
+  "01-01": Año Nuevo
+  "05-01": Día del Trabajo
+  "06-07": Batalla de Arica y Día de la Bandera
+  "06-29": San Pedro y San Pablo
+  "07-23": Día de la Fuerza Aérea del Perú
+  "07-28": Fiestas Patrias
+  "07-29": Fiestas Patrias
+  "08-06": Batalla de Junín
+  "08-30": Santa Rosa de Lima
+  "10-08": Combate de Angamos
+  "11-01": Todos los Santos
+  "12-08": Inmaculada Concepción
+  "12-09": Batalla de Ayacucho
+  "12-25": Navidad
+
+semana_santa: true
+
+# Días no laborables decretados por el Ejecutivo para el sector público (se agregan a mano por año).
+# Se tratan como feriado para efectos del modelo porque generan "feriados largos".
+no_laborables: {}
+#   "2026": ["2026-..-.."]

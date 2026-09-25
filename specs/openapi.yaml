@@ -1,0 +1,212 @@
+openapi: 3.1.0
+info:
+  title: Predictor de visitantes – Cueva de las Lechuzas
+  version: 1.0.0
+  description: >
+    Estima visitantes diarios de la Cueva de las Lechuzas (PN Tingo María, Perú)
+    a partir del pronóstico de WeatherAPI.com. Los datos de visitas son sintéticos.
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      summary: Estado del servicio
+      operationId: getHealth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+  /predicciones:
+    get:
+      summary: Predicción de visitantes (hoy a hoy+2)
+      operationId: getPredicciones
+      parameters:
+        - name: fecha
+          in: query
+          required: false
+          description: Fecha única (YYYY-MM-DD). Si se omite, devuelve los 3 días.
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: Predicciones
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PrediccionesResponse" }
+        "422":
+          description: Fecha inválida o fuera de rango
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /clima/actual:
+    get:
+      summary: Clima actual en la cueva
+      operationId: getClimaActual
+      responses:
+        "200":
+          description: Clima actual
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClimaActual" }
+        "503":
+          description: WeatherAPI no disponible y sin caché
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /historico/mensual:
+    get:
+      summary: Histórico sintético agregado por mes
+      operationId: getHistoricoMensual
+      parameters:
+        - name: meses
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 36, default: 36 }
+      responses:
+        "200":
+          description: Serie mensual
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HistoricoMensual" }
+        "422":
+          description: Parámetro inválido
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /modelo:
+    get:
+      summary: Versión y coeficientes del modelo
+      operationId: getModelo
+      responses:
+        "200":
+          description: Modelo vigente
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Modelo" }
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, version]
+      properties:
+        status: { type: string, enum: [ok] }
+        version: { type: string, example: a1b2c3d }
+    Factor:
+      type: object
+      required: [valor, razon]
+      properties:
+        valor: { type: number, minimum: 0, maximum: 2 }
+        razon: { type: string }
+    Factores:
+      type: object
+      required: [base_diaria, temporada, dia_semana, feriado, clima, tope_capacidad_aplicado]
+      properties:
+        base_diaria: { type: number }
+        temporada: { $ref: "#/components/schemas/Factor" }
+        dia_semana: { $ref: "#/components/schemas/Factor" }
+        feriado: { $ref: "#/components/schemas/Factor" }
+        clima: { $ref: "#/components/schemas/Factor" }
+        tope_capacidad_aplicado: { type: boolean }
+    ClimaDia:
+      type: object
+      required: [condicion, codigo_condicion, temp_max_c, temp_min_c, precipitacion_mm, probabilidad_lluvia]
+      properties:
+        condicion: { type: string }
+        codigo_condicion: { type: integer }
+        icono_url: { type: string, format: uri }
+        temp_max_c: { type: number }
+        temp_min_c: { type: number }
+        precipitacion_mm: { type: number, minimum: 0 }
+        probabilidad_lluvia: { type: integer, minimum: 0, maximum: 100 }
+    Advertencia:
+      type: object
+      required: [codigo, mensaje]
+      properties:
+        codigo: { type: string, enum: [LLUVIA_EXTREMA, TORMENTA, ALERTA_OFICIAL, CLIMA_NO_DISPONIBLE] }
+        mensaje: { type: string }
+    Prediccion:
+      type: object
+      required: [fecha, visitantes_estimados, rango, nivel_afluencia, clima_disponible, factores, advertencias]
+      properties:
+        fecha: { type: string, format: date }
+        visitantes_estimados: { type: integer, minimum: 0, maximum: 1500 }
+        rango:
+          type: object
+          required: [min, max]
+          properties:
+            min: { type: integer, minimum: 0 }
+            max: { type: integer, minimum: 0 }
+        nivel_afluencia: { type: string, enum: [Baja, Media, Alta, Muy alta] }
+        clima_disponible: { type: boolean }
+        clima:
+          oneOf:
+            - $ref: "#/components/schemas/ClimaDia"
+            - type: "null"
+        factores: { $ref: "#/components/schemas/Factores" }
+        advertencias:
+          type: array
+          items: { $ref: "#/components/schemas/Advertencia" }
+    PrediccionesResponse:
+      type: object
+      required: [ubicacion, version_modelo, datos_sinteticos, generado_en, predicciones, atribucion]
+      properties:
+        ubicacion:
+          type: object
+          properties:
+            nombre: { type: string }
+            lat: { type: number }
+            lon: { type: number }
+        version_modelo: { type: string, example: reglas-v1 }
+        datos_sinteticos: { type: boolean, const: true }
+        generado_en: { type: string, format: date-time }
+        predicciones:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items: { $ref: "#/components/schemas/Prediccion" }
+        atribucion: { type: string, const: Powered by WeatherAPI.com }
+    ClimaActual:
+      type: object
+      required: [temp_c, condicion, humedad, actualizado_en]
+      properties:
+        temp_c: { type: number }
+        sensacion_c: { type: number }
+        condicion: { type: string }
+        icono_url: { type: string, format: uri }
+        humedad: { type: integer }
+        precipitacion_mm: { type: number }
+        actualizado_en: { type: string, format: date-time }
+    HistoricoMensual:
+      type: object
+      required: [datos_sinteticos, serie]
+      properties:
+        datos_sinteticos: { type: boolean, const: true }
+        serie:
+          type: array
+          items:
+            type: object
+            required: [mes, visitantes, promedio_diario]
+            properties:
+              mes: { type: string, pattern: "^[0-9]{4}-[0-9]{2}$" }
+              visitantes: { type: integer }
+              promedio_diario: { type: number }
+    Modelo:
+      type: object
+      required: [version_modelo, base_diaria, capacidad_diaria, coeficientes]
+      properties:
+        version_modelo: { type: string }
+        base_diaria: { type: number }
+        capacidad_diaria: { type: integer }
+        coeficientes: { type: object, additionalProperties: true }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [codigo, mensaje]
+          properties:
+            codigo:
+              type: string
+              enum: [FECHA_INVALIDA, FECHA_FUERA_DE_RANGO, PARAMETRO_INVALIDO, CLIMA_NO_DISPONIBLE, ERROR_INTERNO]
+            mensaje: { type: string }
