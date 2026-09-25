@@ -36,7 +36,11 @@ COPY --from=builder /opt/venv /opt/venv
 COPY backend/app ./app
 COPY config ./config
 
-RUN chown -R appuser:appuser /app
+# /data es donde monta el volumen cueva-data (SQLite, DATABASE_PATH=/data/cueva.db).
+# Se crea y se da dueño aquí para que el volumen nombrado herede el permiso al
+# inicializarse; si no, Docker lo crea como root y el proceso no-root no puede escribir.
+RUN mkdir -p /data \
+    && chown -R appuser:appuser /app /data
 USER appuser
 
 EXPOSE 8000
