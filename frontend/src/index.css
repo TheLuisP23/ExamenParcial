@@ -1,0 +1,177 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Fondo/texto con contraste AA (§4 RNF-13, specs/06-frontend.md) */
+  --color-fondo: #ffffff;
+  --color-texto: #1f2933;
+  --color-acento: #1d4ed8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+#root {
+  min-height: 100vh;
+  /* Sin scroll horizontal a 360px (specs/06-frontend.md §4) */
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--color-acento);
+}
+
+/*
+ * Grid de las 3 TarjetaDia (FE-05, specs/06-frontend.md §4, RNF-13):
+ * 1 columna < 640px, 3 columnas >= 640px, sin scroll horizontal a 360px.
+ * `min-width: 0` en las tarjetas evita que un contenido interno "empuje" el
+ * ancho de la columna del grid (causa típica de overflow horizontal en
+ * pantallas angostas).
+ */
+.tarjetas-dia {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .tarjetas-dia {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tarjeta-dia {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  min-width: 0;
+}
+
+.tarjeta-dia__numero {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.advertencias {
+  border: 1px solid #f3a9a4;
+  background-color: #fdecec;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+/*
+ * Estado de error de /predicciones (FE-05, specs/06-frontend.md §3). Mismos
+ * colores que `.advertencias` (ya validados AA sobre `--color-texto`) para
+ * mantener un único lenguaje visual de "algo salió mal" en toda la SPA.
+ */
+.predicciones-error {
+  border: 1px solid #f3a9a4;
+  background-color: #fdecec;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.predicciones-error button {
+  margin-top: 0.5rem;
+  background-color: var(--color-acento);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.predicciones-error button:hover,
+.predicciones-error button:focus-visible {
+  background-color: #1e40af;
+}
+
+/*
+ * Esqueletos de carga de las 3 TarjetaDia (FE-05, specs/06-frontend.md §3).
+ * Franjas grises con un shimmer sutil; `prefers-reduced-motion` lo apaga
+ * para quien lo pida.
+ */
+.tarjeta-dia--esqueleto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.esqueleto-linea {
+  height: 0.9rem;
+  border-radius: 0.25rem;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: esqueleto-pulso 1.4s ease-in-out infinite;
+}
+
+.esqueleto-linea--titulo {
+  width: 45%;
+  height: 1.1rem;
+}
+
+.esqueleto-linea--corta {
+  width: 55%;
+}
+
+.esqueleto-linea--numero {
+  width: 60%;
+  height: 2rem;
+  margin: 0.25rem 0;
+}
+
+.esqueleto-linea--media {
+  width: 75%;
+}
+
+.esqueleto-linea--chip {
+  width: 35%;
+  height: 1.5rem;
+  border-radius: 999px;
+}
+
+@keyframes esqueleto-pulso {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto-linea {
+    animation: none;
+  }
+}
+
+/*
+ * Sección de histórico (FE-04). `ResponsiveContainer` de Recharts necesita
+ * un padre con ancho definido para calcular sus dimensiones; `width: 100%`
+ * más `#root { overflow-x: hidden }` (arriba) evita el scroll horizontal a
+ * 360px que exige specs/06-frontend.md §4.
+ */
+.grafico-historico {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.grafico-historico__leyenda {
+  color: #52606d;
+  font-size: 0.9rem;
+}

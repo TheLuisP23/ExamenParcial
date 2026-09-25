@@ -1,4 +1,4 @@
-# Instrucciones para agentes (backend · frontend · qa)
+# Instrucciones para agentes (back · front · qa)
 
 Este repo se desarrolla **guiado por specs**. Antes de escribir código, lee en este orden:
 
@@ -8,9 +8,15 @@ Este repo se desarrolla **guiado por specs**. Antes de escribir código, lee en 
 
 | Agente | Specs que le corresponden | Prefijo de tareas | Carpeta |
 |--------|---------------------------|-------------------|---------|
-| `backend` | 02, 03, 04, `openapi.yaml`, 05, 09 | `BE-` | `backend/`, `config/` |
-| `frontend` | 01 (HU), 04 (contrato), 06, 09 | `FE-` | `frontend/` |
+| `back` | 02, 03, 04, `openapi.yaml`, 05, 09 | `BE-` | `backend/`, `config/` |
+| `front` | 01 (HU), 04 (contrato), 06, 09 | `FE-` | `frontend/` |
 | `qa` | 01 (criterios Gherkin), 03 §5, 08, 09 | `QA-` | `backend/tests/`, `frontend/tests/`, `e2e/` |
+
+## Cómo delegar (agente principal)
+
+- Tareas `BE-*` → subagente `back` · `FE-*` → `front` · `QA-*` → `qa`.
+- Una tarea por invocación. Al volver, revisa el reporte y corre los tests antes de pasar a la siguiente.
+- Si un subagente devuelve una pregunta, házsela al usuario; no decidas por él.
 
 ## Reglas de trabajo
 

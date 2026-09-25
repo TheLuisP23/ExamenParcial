@@ -1,0 +1,48 @@
+[project]
+name = "cueva-backend"
+version = "0.1.0"
+description = "API de predicción de visitantes de la Cueva de las Lechuzas (PN Tingo María)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "pydantic>=2.7,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "httpx>=0.27,<1.0",
+    "pyyaml>=6.0,<7.0",
+    # `zoneinfo` (app/clock.py) no trae datos de zona horaria propios: en
+    # Windows no hay base de datos IANA del sistema, y las imágenes
+    # `python:*-slim` (Dockerfile) tampoco instalan el paquete `tzdata` del
+    # SO por defecto. Este paquete puro-Python es la forma portable de
+    # garantizar que `ZoneInfo("America/Lima")` resuelva en cualquier SO.
+    "tzdata>=2024.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "respx>=0.21",
+    "ruff>=0.5",
+    "schemathesis>=3.30",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008: `Depends(...)` como valor por defecto es el patrón idiomático de FastAPI.
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
