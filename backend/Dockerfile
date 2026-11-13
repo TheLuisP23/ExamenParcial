@@ -5,7 +5,7 @@
 # y .github/workflows/{ci,deploy}.yml: build.context=., dockerfile=backend/Dockerfile.
 
 # --- Etapa 1: build (instala dependencias en un venv) ---------------------
-FROM python:3.12-slim AS builder
+FROM python:3.15-slim AS builder
 
 WORKDIR /build
 
@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .
 
 # --- Etapa 2: runtime (imagen final, sin herramientas de build) -----------
-FROM python:3.12-slim AS final
+FROM python:3.15-slim AS final
 
 ARG APP_VERSION=dev
 ENV APP_VERSION=${APP_VERSION} \
